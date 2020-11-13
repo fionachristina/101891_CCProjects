@@ -1,63 +1,39 @@
-#include<iostream>
-#include<fstream>
-#include<stdlib.h>
-#include<string.h>
-#include<ctype.h>
+#include <iterator>
+#include <iostream>
+#include <string>
+#include <regex>
+#include <list>
+#include <map>
 
 using namespace std;
 
-int isKeyword(char buffer[]){
-	char keywords[32][10] = {"auto","break","case","char","const","continue","default",
-							"do","double","else","enum","extern","float","for","goto",
-							"if","int","long","register","return","short","signed",
-							"sizeof","static","struct","switch","typedef","union",
-							"unsigned","void","volatile","while"};
-	int i, flag = 0;
-
-	for(i = 0; i < 32; ++i){
-		if(strcmp(keywords[i], buffer) == 0){
-			flag = 1;
-			break;
-		}
-	}
-
-	return flag;
-}
-
 int main(){
-	char ch, buffer[15], operators[] = "+-*/%=";
-	ifstream fin("tester.txt");
-	int i,j=0;
 
-	if(!fin.is_open()){
-		cout<<"error while opening the file\n";
-		exit(0);
-	}
+    string str;
+    cout << "Input a string: ";
+    getline(cin >> ws, str);
 
-	while(!fin.eof()){
-   		ch = fin.get();
+    // define list of patterns
+    map<string,string> patterns {
+        { "[0-9]+" ,   "is a NUMBER" },
+        { "[a-z]+" ,   "is an IDENTIFIER" },
+        { "\\*|\\+|\\=|\\-|\\/",  "is an OPERATOR" },
+        { "\\!=|\\<",  "is a Logic OPERATOR" }
+    };
 
-		for(i = 0; i < 6; ++i){
-   			if(ch == operators[i])
-   				cout<<ch<<" is operator\n";
-   		}
+    // storage for results
+    map< size_t, pair<string,string> > matches;
 
-   		if(isalnum(ch)){
-   			buffer[j++] = ch;
-   		}
-   		else if((ch == ' ' || ch == '\n') && (j != 0)){
-   				buffer[j] = '\0';
-   				j = 0;
+    for ( auto pat = patterns.begin(); pat != patterns.end(); ++pat )
+    {
+        regex r(pat->first);
+        auto words_begin = sregex_iterator( str.begin(), str.end(), r );
+        auto words_end   = sregex_iterator();
 
-   				if(isKeyword(buffer) == 1)
-   					cout<<buffer<<" is keyword\n";
-   				else
-   					cout<<buffer<<" is identifier\n";
-   		}
+        for ( auto it = words_begin; it != words_end; ++it )
+            matches[ it->position() ] = make_pair( it->str(), pat->second );
+    }
 
-	}
-
-	fin.close();
-
-	return 0;
+    for ( auto match = matches.begin(); match != matches.end(); ++match )
+        cout<< match->second.first << " " << match->second.second << endl;
 }

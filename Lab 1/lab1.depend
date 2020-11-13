@@ -1,0 +1,9 @@
+# depslib dependency file v1.0
+1605282505 source:c:\users\fiona\desktop\101891_ccprojects\101891_ccprojects\lab 1\main.cpp
+	<iterator>
+	<iostream>
+	<string>
+	<regex>
+	<list>
+	<map>
+
