@@ -36,4 +36,7 @@ int main(){
 
     for ( auto match = matches.begin(); match != matches.end(); ++match )
         cout<< match->second.first << " " << match->second.second << endl;
+
+         system("PAUSE");
+    return main();
 }
